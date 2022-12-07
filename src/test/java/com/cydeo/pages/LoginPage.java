@@ -36,6 +36,13 @@ public class LoginPage {
 
     }
 
+  public void login(String email,String password){
+
+        emailBox.sendKeys(email);
+        passwordBox.sendKeys(password);
+        loginButton.click();
+
+    }
 
 
 

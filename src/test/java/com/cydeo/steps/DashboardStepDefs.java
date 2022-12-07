@@ -3,8 +3,11 @@ package com.cydeo.steps;
 import com.cydeo.pages.DashBoardPage;
 import com.cydeo.pages.LoginPage;
 import com.cydeo.utility.BrowserUtil;
+import com.cydeo.utility.DB_Util;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Assert;
 
 public class DashboardStepDefs
 {
@@ -29,6 +32,50 @@ public class DashboardStepDefs
         System.out.println("actualBookNumbers = " + actualBookNumbers);
         actualBorrowedBookNumbers = dashBoardPage.borrowedBooksNumber.getText();
         System.out.println("actualBorrowedBookNumbers = " + actualBorrowedBookNumbers);
+
+    }
+    @Then("the informations should be same with database")
+    public void the_informations_should_be_same_with_database() {
+       /*
+       which one is actual/expected?
+       expected->Database
+       actual->UI
+        */
+        //1=Make Connection
+       // DB_Util.createConnection(); --> since we have custom hooks we
+        // dont need to conenct database from step-defs
+
+
+        //USERS
+            //RunQuery
+        DB_Util.runQuery("select count(*) from users");
+
+       //Store Data
+        String expectedUsers=DB_Util.getFirstRowFirstColumn();
+
+        //compare
+        Assert.assertEquals(expectedUsers,actualUserNumbers);
+
+        //BOOKS
+            //RunQUery
+        DB_Util.runQuery("select count(*) from books");
+        String expectedBooks=DB_Util.getFirstRowFirstColumn();
+        Assert.assertEquals(expectedBooks,expectedUsers);
+
+        //BORROWED BOOKS
+            //Run query
+        DB_Util.runQuery("select count(*) from book_borrow\n" +
+                "where is_returned=0");
+        //Store data
+        String expectedBorrowedBook=DB_Util.getFirstRowFirstColumn();
+        //compare
+        Assert.assertEquals(expectedBorrowedBook,actualBorrowedBookNumbers);
+
+
+        //CLOSE CONNECTION
+       // DB_Util.destroy();-->After("@db") will close conenction
+
+
 
     }
 }
